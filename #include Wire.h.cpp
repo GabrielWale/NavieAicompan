@@ -1,0 +1,94 @@
+#include <Wire.h>
+#include <U8g2lib.h>
+
+#define SDA_PIN 8
+#define SCL_PIN 9
+
+// SH1107 128x128
+U8G2_SH1107_128X128_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
+
+void drawEyes(int offsetX, bool blink, int yOffset) {
+  u8g2.clearBuffer();
+
+  if (blink) {
+    u8g2.drawLine(30, 64 + yOffset, 60, 64 + yOffset);
+    u8g2.drawLine(80, 64 + yOffset, 110, 64 + yOffset);
+  } else {
+    u8g2.drawDisc(45, 64 + yOffset, 20);
+    u8g2.drawDisc(95, 64 + yOffset, 20);
+
+    u8g2.setDrawColor(0);
+    u8g2.drawDisc(45 + offsetX, 64 + yOffset, 8);
+    u8g2.drawDisc(95 + offsetX, 64 + yOffset, 8);
+    u8g2.setDrawColor(1);
+  }
+
+  u8g2.sendBuffer();
+}
+
+void drawText(const char* text) {
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+  int16_t x = (128 - u8g2.getStrWidth(text)) / 2;
+  u8g2.drawStr(x, 115, text);
+}
+
+void dance() {
+  for (int i = 0; i < 4; i++) {
+    drawEyes(0, false, -4);
+    delay(150);
+    drawEyes(0, false, 4);
+    delay(150);
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(SDA_PIN, SCL_PIN);
+  u8g2.begin();
+}
+
+void loop() {
+
+  // No make up tetep cantik
+  u8g2.clearBuffer();
+  drawEyes(0, false, 0);
+  drawText("No make up tetep cantik");
+  u8g2.sendBuffer();
+  delay(2000);
+
+  // ASIK (joget)
+  dance();
+  u8g2.clearBuffer();
+  drawEyes(0, false, 0);
+  drawText("PALING ASIK!");
+  u8g2.sendBuffer();
+  delay(2000);
+
+  // Classy (kedip)
+  u8g2.clearBuffer();
+  drawEyes(0, true, 0);
+  drawText("Paling classy");
+  u8g2.sendBuffer();
+  delay(1500);
+
+  // Sama-sama suka
+  u8g2.clearBuffer();
+  drawEyes(-5, false, 0);
+  drawText("Sama-sama suka");
+  u8g2.sendBuffer();
+  delay(2000);
+
+  // Tapi nunggu apa?
+  u8g2.clearBuffer();
+  drawEyes(5, false, 0);
+  drawText("Tapi nunggu apa?");
+  u8g2.sendBuffer();
+  delay(2000);
+
+  // Berdua sampai tua
+  u8g2.clearBuffer();
+  drawEyes(0, false, 0);
+  drawText("Berdua sampai tua");
+  u8g2.sendBuffer();
+  delay(2500);
+}
